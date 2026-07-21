@@ -15,7 +15,7 @@ Two design principles apply:
 - **Distribute activity** across multiple team servers, each running a distinct Malleable C2 (Command and Control) profile.
 - **Front every team server with a redirector** so no team server is directly reachable from the Internet.
 
-![Diagram](/assets/images/crtl/59da0180c2a252ed9b03387180c890ec.png)
+![Diagram](images/59da0180c2a252ed9b03387180c890ec.png)
 
 #### 1.1.1 Operational Tiers
 
@@ -306,7 +306,7 @@ The location at which an EDR product collects telemetry determines both what act
 | ETW-TI | The kernel emits high-fidelity security events (`RemoteVirtualAlloc`, `RemoteWriteVm`, `SetContextThread`, and others) through the Microsoft-Windows-Threat-Intelligence ETW provider. | Requires kernel write access to patch the provider's `ProviderEnableInfo.IsEnabled` field to zero. |
 | Call stack analysis | The sensor performs stack unwinding when a monitored API is invoked and inspects for frames whose return address resides in unbacked memory. | Call stack spoofing or API proxying through the Windows thread pool. |
 
-![Diagram](/assets/images/crtl/bf2e1c11b536e3d60fa88883022ac590.png)
+![Diagram](images/bf2e1c11b536e3d60fa88883022ac590.png)
 
 #### 2.1.3 SSDT and the Move to User-Mode Hooking
 
