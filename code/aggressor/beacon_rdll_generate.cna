@@ -1,0 +1,20 @@
+# BEACON_RDLL_GENERATE — Register a Crystal Palace UDRL with Cobalt Strike
+#
+# This hook fires when a payload is generated through the Cobalt Strike
+# client. It receives the raw Beacon DLL bytes and returns the final
+# payload processed through the Crystal Palace spec file.
+
+import crystalpalace.spec.* from: crystalpalace.jar;
+import java.util.HashMap;
+
+set BEACON_RDLL_GENERATE {
+    local('$beacon $arch $spec_path $spec $final');
+    $beacon = $2;
+    $arch   = $3;
+
+    $spec_path = getFileProper(script_resource(), "loader.spec");
+    $spec  = [LinkSpec Parse: $spec_path];
+    $final = [$spec run: $beacon, [new HashMap]];
+
+    return $final;
+}

