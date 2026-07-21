@@ -1,8 +1,5 @@
 # CRTL Notes
 
-**Certified Red Team Lead** — Zero-Point Security
-
----
 
 ## 1. C2 Infrastructure
 
